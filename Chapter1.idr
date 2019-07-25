@@ -56,7 +56,7 @@
 -- d: define
 -- c: case split
 
-module Main
+module Chapter1
 
 main : IO ()
 main = putStrLn "Hello, Idris World!"
