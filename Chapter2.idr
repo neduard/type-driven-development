@@ -1,4 +1,4 @@
-module Main
+module Chapter2
 
 average : (str : String) -> Double
 average str = let numWords = length (words str)
