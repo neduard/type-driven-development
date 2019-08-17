@@ -66,13 +66,14 @@ myanonexample = \x => x * x  -- note the => instead of -> (as in Haskell)
 unit_type_example : ()  -- unit TYPE
 unit_type_example = ()  -- unit VALUE  (overloaded syntax)
 
--- multi typles are nested pairs (which seems kind of awkward if you think about it)
+-- multi-tuples are nested pairs (which seems kind of awkward if you think about it)
 -- (1,2,3) == (1, (2, 3))  -- note there is no unit type
 
 -- Note: Idris does have type inference in the REPL.  You can type [1,2,3] and
 -- it will know it is List Integer
 
 
+-- Modules
 -- See Average.idr
 
 -- Whitespace rule:
@@ -83,7 +84,7 @@ unit_type_example = ()  -- unit VALUE  (overloaded syntax)
 -- Documentation comments:
 ||| This is a documentation comment for myAwesomeFunction
 ||| (which is not very awesome)
-||| @arg an awesome and totally relevant argument
+||| @arg an awesome and totally irrelevant argument
 myAwesomeFunction : arg -> ()
 myAwesomeFunction x = ()  -- note that arg in documentation is one in type defintion
 
