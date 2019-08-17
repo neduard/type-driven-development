@@ -1,4 +1,5 @@
 module Chapter4
+import Data.Vect
 
 data Bool = False | True
 
@@ -171,23 +172,24 @@ biggestTriangle2 (Rotate r p) = biggestTriangle2 p
 biggestTriangle2 (Translate x y p) = biggestTriangle2 p
 
 -- Dependent types.  Woot!
-data PowerSource = Petrol | Pedal
+-- Redefined in ex1
+--data PowerSource = Petrol | Pedal
                 
 -- How is this type fundamentally different from Maybe a?
-data Vehicle : PowerSource -> Type where
-  Bicycle : Vehicle Pedal
-  Car     : (fuel : Nat) -> Vehicle Petrol
-  Bus     : (fuel : Nat) -> Vehicle Petrol
-
-wheels : Vehicle power -> Nat
-wheels Bicycle = 2
-wheels (Car fuel) = 4
-wheels (Bus fuel) = 4
-
-refuel : Vehicle Petrol -> Vehicle Petrol
-refuel (Car fuel) = Car (fuel + 20)
-refuel (Bus fuel) = Car (fuel + 10)
-refuel Bicycle impossible
+--data Vehicle : PowerSource -> Type where
+--  Bicycle : Vehicle Pedal
+--  Car     : (fuel : Nat) -> Vehicle Petrol
+--  Bus     : (fuel : Nat) -> Vehicle Petrol
+--
+--wheels : Vehicle power -> Nat
+--wheels Bicycle = 2
+--wheels (Car fuel) = 4
+--wheels (Bus fuel) = 4
+--
+--refuel : Vehicle Petrol -> Vehicle Petrol
+--refuel (Car fuel) = Car (fuel + 20)
+--refuel (Bus fuel) = Car (fuel + 10)
+--refuel Bicycle impossible
 
 data MyWeirdType : Type -> Type where
   A : MyWeirdType (Maybe Int)
@@ -201,3 +203,51 @@ myWeirdFunction2 : a -> MyWeirdType a
 myWeirdFunction2 x = ?myWeirdFunction2_rhs  -- can this be defined in any way?
 
 -- See Vect.idr
+
+-- Ex1,2
+data PowerSource = Pedal | Petrol | Electric
+data Vehicle : PowerSource -> Type where
+  Bicycle : Vehicle Pedal
+  Unicycle : Vehicle Pedal
+  Motorcycle : (fuel : Nat) -> Vehicle Petrol
+  PetrolCar : (fuel : Nat) -> Vehicle Petrol
+  Bus : (fuel : Nat) -> Vehicle Petrol
+  Tram : Vehicle Electric
+  ElectricCar : Vehicle Electric
+-- Feels like a slightly contrived example...
+-- there is power in it in terms of how depending on the PowerSource
+-- Vehicle has a different definition (i.e. in terms of fuel).
+
+
+wheels : Vehicle p -> Nat
+wheels Bicycle = 2
+wheels Unicycle = 1
+wheels (Motorcycle fuel) = 2
+wheels (PetrolCar fuel) = 4
+wheels (Bus fuel) = 4
+
+-- Ex 3,4
+vectTake : (k : Fin n) -> Vect n a -> Vect (finToNat k) a
+vectTake FZ xs = []
+--vectTake (FS k') xs = ?vectTake_rhs_2  -- case on xs (it can't be [])
+--vectTake (FS k') (x :: xs) = ?vectTake_rhs_1  -- search on ?rhs
+vectTake (FS k') (x :: xs) = x :: vectTake k' xs  -- BAM programs that write themselves.
+
+-- Remember, types are proofs so you can freely substitute 'proof'
+-- with the word type
+data LT : Nat -> Nat -> Type where
+  LTZero : Chapter4.LT Z (S n)
+  LTSucc : Chapter4.LT a b -> Chapter4.LT a (S b)
+
+-- I like this version since it clearly shows what we need.
+-- It is not as easy to workwith though.
+vectTake' : LTE k n -> Vect n a -> Vect k a
+vectTake' LTEZero xs = []
+vectTake' (LTESucc k') (x :: xs) = x :: vectTake' k' xs
+
+-- Ex5
+sumEntries : Num a => (pos : Integer) -> Vect n a -> Vect n a -> Maybe a
+sumEntries {n} pos xs ys = map (\i => (Data.Vect.index i xs) + (Data.Vect.index i ys))
+                               (integerToFin pos n)
+
+-- Now go to DataStore.idr
